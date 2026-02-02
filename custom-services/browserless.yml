@@ -1,0 +1,22 @@
+services:
+  browserless:
+    image: browserless/chrome
+    container_name: browserless
+    ports:
+      - "3000:3000"
+    environment:
+      - CONCURRENT=10
+      - TOKEN=8309e6ee2992
+      - HEALTH=true
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/pressure?token=8309e6ee2992"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - n8n-net
+
+networks:
+  n8n-net:
+    driver: bridge

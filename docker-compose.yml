@@ -1,0 +1,218 @@
+include:
+  - custom-services/browserless.yml
+  - custom-services/qdrant.yml
+  #- custom-services/nocodb.yml
+
+x-n8n-worker-def: &worker-def
+  build: ./
+  depends_on:
+    - postgres
+    - redis
+    - minio
+    - n8n
+  command: worker
+  volumes:
+    - ./n8n-data/nodes:/home/node/.n8n/nodes
+    - /opt:/home/node/.n8n-files/opt
+  env_file:
+    - .n8n.env
+  environment:
+    - N8N_DISABLE_UI=true
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD-SHELL", "wget --spider -q http://localhost:5678/healthz || exit 1"]
+    interval: 30s
+    timeout: 10s
+    retries: 5
+  networks:
+    - n8n-net
+
+x-n8n-runner-def: &runner-def
+  image: n8nio/runners
+  depends_on:
+    - n8n
+  volumes:
+    - ./n8n-data/nodes:/home/node/.n8n/nodes
+  env_file:
+    - .n8n.env
+  restart: always
+  healthcheck:
+    test: ["CMD-SHELL", "wget --spider -q http://localhost:5680/healthz || exit 1"]
+    interval: 30s
+    timeout: 10s
+    retries: 5
+  networks:
+    - n8n-net
+
+services:
+  n8n:
+    build: ./
+    # image: n8nio/n8n:stable
+    container_name: n8n
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    volumes:
+      - ./n8n-data:/home/node/.n8n
+      - ./backup:/home/node/backup
+    env_file:
+      - .n8n.env
+    environment:
+      # Deployment
+      - N8N_DISABLE_PRODUCTION_MAIN_PROCESS=true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - n8n-net
+
+  # Scaling Workers & Runners
+  worker-1:
+    <<: *worker-def
+    container_name: worker-1
+
+  runner-1:
+    <<: *runner-def
+    container_name: runner-1
+    depends_on:
+      - worker-1
+    environment:
+      - N8N_RUNNERS_TASK_BROKER_URI=http://worker-1:5679
+
+  worker-2:
+    <<: *worker-def
+    container_name: worker-2
+
+  runner-2:
+    <<: *runner-def
+    container_name: runner-2
+    depends_on:
+      - worker-2
+    environment:
+      - N8N_RUNNERS_TASK_BROKER_URI=http://worker-2:5679
+
+  webhook:
+    build: ./
+    #image: n8nio/n8n:stable
+    # container_name: webhook
+    deploy:
+      mode: replicated
+      replicas: 2
+    depends_on:
+      - postgres
+      - redis
+      - n8n
+    command: webhook
+    volumes:
+      - ./n8n-data/nodes:/home/node/.n8n/nodes
+    env_file:
+      - .n8n.env
+    environment:
+      # Deployment
+      - N8N_DISABLE_UI=true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - n8n-net
+
+  redis:
+    image: redis:6.2
+    container_name: redis
+    command: redis-server --requirepass 123
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - n8n-net
+
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=n8n
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d n8n"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - n8n-net
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./minio-data:/data
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - n8n-net
+
+  minio-init:
+    image: minio/mc
+    container_name: minio-init
+    depends_on:
+      - minio
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["./minio-bootstrap.sh"]
+    volumes:
+      - ./scripts/minio-bootstrap.sh:/minio-bootstrap.sh:ro
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
+      - N8N_ACCESS_KEY=N8N_ACCESS_KEY
+      - N8N_SECRET_KEY=N8N_SECRET_KEY
+    restart: "no"
+    networks:
+      - n8n-net
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    depends_on:
+      - n8n
+      - webhook
+      - minio
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certs:/etc/nginx/certs:ro
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "service nginx status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - n8n-net        
+
+networks:
+  n8n-net:
+    driver: bridge

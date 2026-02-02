@@ -1,0 +1,1 @@
+0 0 * * * /root/n8n/scripts/backup.sh
