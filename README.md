@@ -141,4 +141,4 @@ tail /var/log/n8n-backup.log
 ---
 
 ## License
-MIT
+GNU
