@@ -48,6 +48,15 @@ Thay đổi cấu hình proxy tương ứng trong thư mục cấu hình [nginx]
 ls nginx/conf.d/*.conf
 ```
 
+Tạo Self-signed Certificate dạng SSL Wildcard (hoặc copy nếu bạn đã có):
+```
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+  -keyout ./nginx/certs/private.key \
+  -out ./nginx/certs/fullchain.pem \
+  -subj "/C=VN/ST=Hanoi/L=Hanoi/O=IT/OU=LocalDev/CN=*.domain.local" \
+  -addext "subjectAltName = DNS:*.domain.local, DNS:domain.local"
+```
+
 ### Phân quyền thư mục
 Chuẩn bị các folder sau và đảm bảo n8n có quyền đọc ghi:
 ```sh
