@@ -43,6 +43,11 @@ Create an A/AAAA record for n8n host:
 | MinIO Console | `https://minio.domain.local` | Private |
 | MinIO API | `https://minio-gw.domain.local` | Private |
 
+Thay đổi cấu hình proxy tương ứng trong thư mục cấu hình [nginx](./nginx)
+```sh
+ls nginx/conf.d/*.conf
+```
+
 ### Phân quyền thư mục
 Chuẩn bị các folder sau và đảm bảo n8n có quyền đọc ghi:
 ```sh
