@@ -32,8 +32,13 @@ Checkout [System Architectures](./imgs/architect/)
 - Disk: SSD ≥ 50GB
 - Network: SSL wildcard hoặc LetsEncrypt, Domain tách UI vs Gateway
 
-### DNS Records
+### Docker & Docker compose
+Install latest docker version:
+```sh
+curl -fsSL https://get.docker.com | sh
+```
 
+### DNS Records
 Create an A/AAAA record for n8n host:
 
 | Service | Domain | Scope |
