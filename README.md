@@ -148,6 +148,19 @@ include:
   # - custom-services/nocodb.yml  <-- Comment để tắt
 ```
 
+### Troubleshoot
+
+Check docker compose logs
+```sh
+docker compose logs -f
+```
+
+Known issues:
++ `S3 binary data storage requires a valid license` -> change to use database storage
++ `There is a deprecation related to your environment variables` -> remove that environment
++ `EACCES: permission denied, open '/home/node/.n8n/nodes/package.json'` -> chmod -R 777 n8n-data
++ 
+
 ### Backup & Restore
 
 Setup backup (crontab):
