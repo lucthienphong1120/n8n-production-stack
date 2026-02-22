@@ -52,6 +52,20 @@ chmod -R 777 n8n-data backup
 
 ## Quản trị dịch vụ
 
+### Prepare services
+Cấu hình các cài đặt và biến môi trường trong file [.n8n.env](./.n8n.env)
+
+```sh
+vi .n8n.env
+```
+
+Kéo và build các docker image cần thiết để chuẩn bị dịch vụ
+
+```sh
+docker compose pull
+docker compose build
+```
+
 ### Base Stack
 Khởi chạy bộ core dịch vụ (n8n, worker, webhook, db, redis, minio, nginx) cùng các dịch vụ mở rộng (đã được include tự động):
 
