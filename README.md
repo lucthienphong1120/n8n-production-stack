@@ -54,6 +54,14 @@ chmod -R 777 n8n-data backup
 
 ### Prepare services
 Cấu hình các cài đặt và biến môi trường trong file [.n8n.env](./.n8n.env)
++ N8N_DEFAULT_BINARY_DATA_MODE
++ N8N_EDITOR_BASE_URL
++ N8N_ENCRYPTION_KEY
++ N8N_HOST
++ WEBHOOK_URL
++ N8N_EXTERNAL_STORAGE_S3_HOST
++ N8N_RUNNERS_AUTH_TOKEN
++ ...
 
 ```sh
 vi .n8n.env
