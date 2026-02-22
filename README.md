@@ -159,7 +159,7 @@ Known issues:
 + `S3 binary data storage requires a valid license` -> change to use database storage
 + `There is a deprecation related to your environment variables` -> remove that environment
 + `EACCES: permission denied, open '/home/node/.n8n/nodes/package.json'` -> chmod -R 777 n8n-data
-+ 
++ `Failed to connect to S3 for binary data storage. Please check your S3 configuration.` -> check for minio dns or hosts file
 
 ### Backup & Restore
 
