@@ -72,6 +72,7 @@ Chuẩn bị các folder sau và đảm bảo n8n có quyền đọc ghi:
 ```sh
 mkdir -p n8n-data backup
 chmod -R 777 n8n-data backup
+chmod +x scripts/*
 ```
 
 ## Quản trị dịch vụ
@@ -161,10 +162,10 @@ docker compose logs -f
 ```
 
 Known issues:
-+ `S3 binary data storage requires a valid license` -> change to use database storage
++ `S3 binary data storage requires a valid license` -> change to use database storage, update license file to use feature
 + `There is a deprecation related to your environment variables` -> remove that environment
-+ `EACCES: permission denied, open '/home/node/.n8n/nodes/package.json'` -> chmod -R 777 n8n-data
-+ `Failed to connect to S3 for binary data storage. Please check your S3 configuration.` -> check for minio dns or hosts file
++ `EACCES: permission denied, open '/home/node/.n8n/nodes/package.json'` -> update permission for n8n-data folder
++ `Failed to connect to S3 for binary data storage. Please check your S3 configuration.` -> check for minio dns or hosts file, check minio console, update permission for scripts folder
 
 ### Backup & Restore
 
