@@ -14,11 +14,11 @@ Mô hình triển khai `queue mode` tách biệt các thành phần để đảm
 - **Redis**: Queue broker và caching.
 - **PostgreSQL**: Database lưu trữ chính.
 - **MinIO**: Object storage s3-compatible (lưu trữ file/binary).
+- **qdrant**: Vector database cho AI/semantic search.
 - **Nginx**: Reverse proxy, SSL termination, routing.
 
 ### Extended Stack (Optional)
 - **browserless**: Chrome headless cho các task scraping/automation.
-- **qdrant**: Vector database cho AI/semantic search.
 - **nocodb**: No-code database interface.
 
 ### Sơ đồ luồng dữ liệu
