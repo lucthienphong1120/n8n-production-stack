@@ -1,6 +1,5 @@
 include:
   - custom-services/browserless.yml
-  - custom-services/qdrant.yml
   #- custom-services/nocodb.yml
 
 x-n8n-worker-def: &worker-def
