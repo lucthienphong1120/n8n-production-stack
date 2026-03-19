@@ -1,1 +1,4 @@
+# Run everyday at 0h00
 0 0 * * * /root/n8n/scripts/backup.sh
+# Run everyday at 0h10
+10 0 * * * /root/n8n/scripts/auto_git.sh
