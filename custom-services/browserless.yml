@@ -8,6 +8,7 @@ services:
       - CONCURRENT=10
       - TOKEN=8309e6ee2992
       - HEALTH=true
+      - DEFAULT_IGNORE_HTTPS_ERRORS=true
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/pressure?token=8309e6ee2992"]
