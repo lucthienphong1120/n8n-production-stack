@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Migrate Qdrant to Production service in `docker-compose.yml`
 - Updated scripts for backup & restore mechanisms for more flexible and controls (included new Postgres, Qdrant backup).
+- Add environment for disable TLS verify failed when using corporate/proxy network
 
 ## [2.2.0] - 2026-01-29
 
