@@ -175,6 +175,8 @@ crontab scripts/n8n.cron
 crontab -l
 ```
 
+This file included backup all services and auto commit to Git (changed if needed)
+
 Backup manual:
 ```sh
 bash scripts/backup.sh
