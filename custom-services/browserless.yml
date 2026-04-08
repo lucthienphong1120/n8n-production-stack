@@ -1,6 +1,6 @@
 services:
   browserless:
-    image: browserless/chrome
+    image: ghcr.io/browserless/chromium
     container_name: browserless
     ports:
       - "3000:3000"
